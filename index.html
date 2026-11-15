@@ -95,7 +95,7 @@ h1{font-family:var(--f-chalk); font-weight:400; font-size:2.4rem; margin:0; lett
   background:var(--board-deep); border-radius:16px; box-shadow:inset 0 2px 6px rgba(0,0,0,.35)}
 .lvl{border:0; border-radius:12px; padding:8px 2px 7px; min-width:0; cursor:pointer; background:transparent; color:var(--chalk-dim);
   display:flex; flex-direction:column; align-items:center; gap:1px; transition:background .15s, color .15s}
-.lvl b{font-family:var(--f-chalk); font-weight:400; font-size:1.05rem; line-height:1.1}
+.lvl b{font-family:var(--f-chalk); font-weight:400; font-size:1.05rem; line-height:1.1; overflow-wrap:anywhere; text-wrap:balance}
 .lvl span{font-family:var(--f-num); font-weight:800; font-size:.9rem; letter-spacing:.04em; white-space:nowrap}
 .lvl[aria-pressed="true"]{background:var(--star); color:var(--ink); box-shadow:0 3px 0 #c79a12}
 .lvl:focus-visible{outline:3px solid var(--star); outline-offset:2px}
@@ -136,6 +136,8 @@ h1{font-family:var(--f-chalk); font-weight:400; font-size:2.4rem; margin:0; lett
 .key.fn{background:#d9cfb4; font-size:1.4rem}
 .key.go{grid-column:4; grid-row:3 / span 2; height:auto; background:var(--star); box-shadow:0 4px 0 #c79a12; font-size:1.35rem}
 .key.zero{grid-column:1 / span 3}
+.pad.dec .key.zero{grid-column:1 / span 2}
+.key.dot{font-size:2rem; line-height:1}
 .key[disabled]{opacity:.45; cursor:not-allowed}
 
 .spin{
@@ -157,12 +159,13 @@ h1{font-family:var(--f-chalk); font-weight:400; font-size:2.4rem; margin:0; lett
 
 .star{position:fixed; width:26px; height:26px; margin:-13px 0 0 -13px; pointer-events:none; z-index:50;
   background:var(--star); clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
-.bravo{position:fixed; left:50%; top:38%; z-index:60; pointer-events:none;
+.bravo{position:fixed; left:50%; top:38%; z-index:60; pointer-events:none; width:max-content; max-width:92vw; text-align:center;
   font-family:var(--f-num); font-weight:800; font-size:3.4rem; color:var(--star);
   text-shadow:0 3px 0 #a87a00, 0 8px 18px rgba(0,0,0,.4); transform:translate(-50%,-50%)}
 @media (prefers-reduced-motion: reduce){ .answer.wrong{animation:none} }
 
-.copy{margin-top:6px; text-align:center; font-size:1rem; color:var(--chalk-dim); opacity:.8}
+.copy{margin-top:6px; display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:4px 10px; font-size:.92rem; color:var(--chalk-dim); opacity:.8}
+.copy .ver{font-family:var(--f-num); font-weight:600; font-size:.78rem; letter-spacing:.04em; padding:0 7px; white-space:nowrap; border:1px solid rgba(242,239,226,.3); border-radius:999px; font-variant-numeric:tabular-nums}
 
 /* Lehrperson-Einstellungen */
 [hidden]{display:none!important}
@@ -185,17 +188,72 @@ h1{font-family:var(--f-chalk); font-weight:400; font-size:2.4rem; margin:0; lett
 .sheet label{font-size:1.15rem}
 .sheet input[type=password], .sheet input[type=number]{font:600 1.1rem var(--f-num); background:var(--roller); color:var(--ink);
   border:0; border-radius:10px; padding:8px 10px; min-width:0}
+.sheet input{box-sizing:border-box}
 .sheet input[type=checkbox]{width:22px; height:22px; margin:0; accent-color:var(--star)}
 .sheet input:focus-visible, .sheet button:focus-visible{outline:3px solid var(--star); outline-offset:2px}
-.lrow{display:grid; grid-template-columns:22px 1fr 72px; align-items:center; gap:4px 10px}
-.lrow label{display:flex; flex-direction:column; line-height:1.1}
-.lrow label small{font-family:var(--f-num); font-weight:800; font-size:.85rem; color:var(--chalk-dim); letter-spacing:.04em}
+.lrow{display:grid; grid-template-columns:22px 1fr 72px; align-items:center; gap:7px 10px; padding-top:10px; border-top:1px solid rgba(242,239,226,.12)}
 .lrow input[type=number]{width:72px; text-align:center}
+.sheet .lrow input[type=text]{font:400 1.2rem var(--f-chalk); background:var(--roller); color:var(--ink); border:0; border-radius:10px; padding:6px 10px; min-width:0; width:100%}
+.sheet .lrow input[type=text]:focus-visible{outline:3px solid var(--star); outline-offset:2px}
+.lrow .ops{grid-column:2 / 4; display:flex; flex-wrap:wrap; gap:6px}
+.op{position:relative; cursor:pointer}
+.op input{position:absolute; opacity:0; width:1px; height:1px}
+.op span{display:grid; place-items:center; width:40px; height:34px; border-radius:9px; font:800 1.4rem/1 var(--f-num);
+  color:var(--chalk-dim); border:2px solid rgba(242,239,226,.25)}
+.op input:checked + span{background:var(--star); color:var(--ink); border-color:var(--star)}
+.op input:focus-visible + span{outline:3px solid var(--star); outline-offset:2px}
+.lrow .ops{gap:5px}
+.who{display:flex; align-items:center; gap:12px; padding:8px 10px; border-radius:16px;
+  background:repeating-linear-gradient(92deg, rgba(0,0,0,.06) 0 3px, transparent 3px 11px), linear-gradient(180deg, #c48b52, var(--wood) 40%, #9c6534);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.25), inset 0 -3px 0 var(--wood-dark), 0 6px 14px rgba(0,0,0,.3)}
+.who-l{font-family:var(--f-chalk); font-size:1.25rem; color:#3b240f; line-height:1.1; flex:0 0 auto}
+.reel.names{--H:40px; flex:1; min-width:0}
+.reel.names .cell{font-family:var(--f-chalk); font-weight:400; font-size:1.65rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding:0 8px}
+.kid{margin:-6px 0 0; text-align:center; font-family:var(--f-chalk); font-size:1.15rem; color:var(--chalk-dim)}
+.kid b{font-weight:400; font-size:1.7rem; color:var(--chalk); margin-left:6px}
+.kidbtns{display:flex; flex-wrap:wrap; gap:8px}
+.kidbtns .btn{flex:1 1 140px}
+.fld{font-size:1.1rem}
+.sheet input.kname{box-sizing:border-box; width:100%; font:400 1.3rem var(--f-chalk); background:var(--roller); color:var(--ink); border:0; border-radius:10px; padding:7px 12px}
+.sheet input.kname:focus-visible{outline:3px solid var(--star); outline-offset:2px}
+.tbl{gap:10px}
+.tblwrap{overflow-x:auto; -webkit-overflow-scrolling:touch; border-radius:10px}
+.stab{border-collapse:separate; border-spacing:0; min-width:max-content}
+.stab th, .stab td{padding:8px; border-bottom:1px solid rgba(242,239,226,.12); vertical-align:top; text-align:left}
+.stab thead th{font-weight:400; font-size:.95rem; color:var(--chalk-dim); line-height:1.15; vertical-align:bottom}
+.stab .stick{position:sticky; left:0; z-index:1; background:var(--board-deep); box-shadow:2px 0 0 rgba(242,239,226,.12)}
+.stab input[type=text]{box-sizing:border-box; font:400 1.15rem var(--f-chalk); background:var(--roller); color:var(--ink); border:0; border-radius:8px; padding:5px 8px; min-width:0}
+.stab input[type=text]:focus-visible{outline:3px solid var(--star); outline-offset:1px}
+.stab th.stick input{width:130px}
+.lvc{display:flex; flex-direction:column; gap:6px; width:182px}
+.lvtop{display:flex; align-items:center; gap:6px}
+.lvtop input[type=text]{flex:1; width:100%}
+.lvc .ops{display:flex; gap:4px}
+.op.sm span{width:31px; height:28px; border-radius:7px; font-size:1.1rem}
+.mx{display:flex; align-items:center; gap:6px; font-size:.95rem; color:var(--chalk-dim)}
+.sheet .mx input{width:66px; padding:4px 8px; text-align:center}
+.stab td.tg, .stab td.st, .stab td.del{text-align:center; vertical-align:middle}
+.stab td.st{font:800 1.1rem var(--f-num); color:var(--star)}
+.x.sm{width:34px; height:34px; font-size:1.1rem; border:1px solid rgba(242,239,226,.25)}
+.x.sm:focus-visible{outline:3px solid var(--star); outline-offset:2px}
+.reels.dec .reel:not(.op) .cell{font-size:2.15rem}
+.reels.dec.chain .reel:not(.op) .cell{font-size:1.5rem}
+.reels.unary #r1{opacity:.45}
+.reels.unary #r1 .cell{visibility:hidden}
+.reels.unary #r3 .cell{font-size:2.1rem}
 .colhead{display:grid; grid-template-columns:22px 1fr 72px; gap:10px; font-size:.95rem; color:var(--chalk-dim)}
 .colhead span:last-child{text-align:center; line-height:1.1}
 .tog{display:flex; align-items:center; gap:10px}
 .srow{display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:1.15rem}
 .pwrow{display:flex; flex-direction:column; gap:8px}
+.vh{position:absolute; width:1px; height:1px; opacity:0; pointer-events:none}
+.sheet .filebtn{box-sizing:border-box; display:flex; align-items:center; justify-content:center; text-align:center; font-size:1.05rem}
+.vh:focus-visible + .kidbtns .filebtn{outline:3px solid var(--star); outline-offset:2px}
+#bkText{box-sizing:border-box; width:100%; font:.85rem/1.35 ui-monospace, Menlo, Consolas, monospace; background:var(--roller); color:var(--ink);
+  border:0; border-radius:10px; padding:8px 10px; resize:vertical; margin-bottom:8px}
+#bkText:focus-visible{outline:3px solid var(--star); outline-offset:2px}
+#bkMsg:empty{display:none}
+#bkMsg.ok{color:var(--ok)} #bkMsg.bad{color:var(--bad)}
 .btn{font:800 1.05rem var(--f-num); border:0; border-radius:12px; padding:10px 16px; cursor:pointer; background:#d9cfb4; color:var(--ink)}
 .btn.primary{background:var(--star); box-shadow:0 3px 0 #c79a12}
 .btn.doc{display:flex; align-items:center; justify-content:center; gap:8px; text-decoration:none; background:transparent;
@@ -220,11 +278,12 @@ h1{font-family:var(--f-chalk); font-weight:400; font-size:2.4rem; margin:0; lett
       </button>
     </div>
   </header>
+  <p class="kid">Es rechnet <b id="kidName">Kind 1</b></p>
   <nav class="levels" id="levels" aria-label="Stufe wählen">
-    <button class="lvl" data-l="0" aria-pressed="true"><b>Entdecker</b><span>+ −</span></button>
-    <button class="lvl" data-l="1" aria-pressed="false"><b>Forscher</b><span>+ − ×</span></button>
-    <button class="lvl" data-l="2" aria-pressed="false"><b>Profi</b><span>+ − × :</span></button>
-    <button class="lvl" data-l="3" aria-pressed="false"><b>Professor</b><span id="lvlRoot">√ 2500</span></button>
+    <button class="lvl" data-l="0" aria-pressed="true"><b id="lvName0">Entdecker</b><span id="lvOps0">+ −</span></button>
+    <button class="lvl" data-l="1" aria-pressed="false"><b id="lvName1">Forscher</b><span id="lvOps1">+ − ·</span></button>
+    <button class="lvl" data-l="2" aria-pressed="false"><b id="lvName2">Profi</b><span id="lvOps2">+ − · :</span></button>
+    <button class="lvl" data-l="3" aria-pressed="false"><b id="lvName3">Professor</b><span id="lvOps3">√</span></button>
   </nav>
 
   <p class="hint" id="hint">Walzen mit dem Finger drehen oder den Knopf drücken, dann das Ergebnis eintippen.</p>
@@ -254,10 +313,10 @@ h1{font-family:var(--f-chalk); font-weight:400; font-size:2.4rem; margin:0; lett
     <button class="key" data-k="7">7</button><button class="key" data-k="8">8</button><button class="key" data-k="9">9</button><button class="key fn" data-k="del" aria-label="Löschen">⌫</button>
     <button class="key" data-k="4">4</button><button class="key" data-k="5">5</button><button class="key" data-k="6">6</button><button class="key fn" data-k="neg" aria-label="Minus">−</button>
     <button class="key" data-k="1">1</button><button class="key" data-k="2">2</button><button class="key" data-k="3">3</button><button class="key go" id="go" data-k="ok">Prüfen</button>
-    <button class="key zero" data-k="0">0</button>
+    <button class="key zero" data-k="0">0</button><button class="key dot" data-k="dot" aria-label="Komma" hidden>.</button>
   </div>
 
-  <footer class="copy">© 2026 Mike Staub · Alle Rechte vorbehalten</footer>
+  <footer class="copy"><span>© 2026 Mike Staub · Alle Rechte vorbehalten</span><span class="ver">Version 1.7</span></footer>
 </div>
 
 <div class="ov" id="ov" hidden>
@@ -272,21 +331,73 @@ h1{font-family:var(--f-chalk); font-weight:400; font-size:2.4rem; margin:0; lett
     </form>
 
     <form id="setForm" hidden>
+      <div class="who">
+        <span class="who-l">Kind</span>
+        <div class="reel names" id="rs" tabindex="0" role="spinbutton" aria-label="Kind"></div>
+      </div>
+      <div class="kidbtns">
+        <button type="button" class="btn" id="addStu">+ Kind hinzufügen</button>
+        <button type="button" class="btn" id="delStu">Kind entfernen</button>
+      </div>
+
       <fieldset>
-        <legend>Stufen</legend>
-        <div class="colhead"><span></span><span>Haken = für Kinder sichtbar</span><span>grösste Zahl</span></div>
-        <div class="lrow"><input type="checkbox" id="lv0"><label for="lv0">Entdecker<small>+ −</small></label><input type="number" id="mx0" min="2" max="100" inputmode="numeric" aria-label="Entdecker: grösste Zahl"></div>
-        <div class="lrow"><input type="checkbox" id="lv1"><label for="lv1">Forscher<small>+ − ×</small></label><input type="number" id="mx1" min="2" max="100" inputmode="numeric" aria-label="Forscher: grösste Zahl"></div>
-        <div class="lrow"><input type="checkbox" id="lv2"><label for="lv2">Profi<small>+ − × :</small></label><input type="number" id="mx2" min="2" max="100" inputmode="numeric" aria-label="Profi: grösste Zahl"></div>
-        <div class="lrow"><input type="checkbox" id="lv3"><label for="lv3">Professor<small id="mx3txt">√ bis 2500</small></label><input type="number" id="mx3" min="2" max="50" inputmode="numeric" aria-label="Professor: grösstes Ergebnis der Wurzel"></div>
-        <p class="note">Zahlen von 2 bis 100. Bei Professor ist es das grösste Ergebnis (2 bis 50).</p>
+        <legend>Einstellungen für <span id="dName">Kind 1</span></legend>
+        <label class="fld" for="kName">Name des Kindes</label>
+        <input type="text" id="kName" class="kname" maxlength="20" autocomplete="off">
+        <div class="colhead"><span></span><span>Stufen</span><span>grösste Zahl</span></div>
+        <div class="lrow">
+          <input type="checkbox" id="lv0" aria-label="Stufe 1 sichtbar">
+          <input type="text" id="nm0" maxlength="14" autocomplete="off" aria-label="Name der Stufe 1">
+          <input type="number" id="mx0" min="2" max="100" inputmode="numeric" aria-label="Stufe 1: grösste Zahl">
+          <div class="ops" role="group" aria-label="Rechenarten der Stufe 1"><label class="op"><input type="checkbox" id="op00" data-op="+"><span>+</span></label><label class="op"><input type="checkbox" id="op01" data-op="−"><span>−</span></label><label class="op"><input type="checkbox" id="op02" data-op="·"><span>·</span></label><label class="op"><input type="checkbox" id="op03" data-op=":"><span>:</span></label><label class="op"><input type="checkbox" id="op04" data-op="√"><span>√</span></label></div>
+        </div>
+        <div class="lrow">
+          <input type="checkbox" id="lv1" aria-label="Stufe 2 sichtbar">
+          <input type="text" id="nm1" maxlength="14" autocomplete="off" aria-label="Name der Stufe 2">
+          <input type="number" id="mx1" min="2" max="100" inputmode="numeric" aria-label="Stufe 2: grösste Zahl">
+          <div class="ops" role="group" aria-label="Rechenarten der Stufe 2"><label class="op"><input type="checkbox" id="op10" data-op="+"><span>+</span></label><label class="op"><input type="checkbox" id="op11" data-op="−"><span>−</span></label><label class="op"><input type="checkbox" id="op12" data-op="·"><span>·</span></label><label class="op"><input type="checkbox" id="op13" data-op=":"><span>:</span></label><label class="op"><input type="checkbox" id="op14" data-op="√"><span>√</span></label></div>
+        </div>
+        <div class="lrow">
+          <input type="checkbox" id="lv2" aria-label="Stufe 3 sichtbar">
+          <input type="text" id="nm2" maxlength="14" autocomplete="off" aria-label="Name der Stufe 3">
+          <input type="number" id="mx2" min="2" max="100" inputmode="numeric" aria-label="Stufe 3: grösste Zahl">
+          <div class="ops" role="group" aria-label="Rechenarten der Stufe 3"><label class="op"><input type="checkbox" id="op20" data-op="+"><span>+</span></label><label class="op"><input type="checkbox" id="op21" data-op="−"><span>−</span></label><label class="op"><input type="checkbox" id="op22" data-op="·"><span>·</span></label><label class="op"><input type="checkbox" id="op23" data-op=":"><span>:</span></label><label class="op"><input type="checkbox" id="op24" data-op="√"><span>√</span></label></div>
+        </div>
+        <div class="lrow">
+          <input type="checkbox" id="lv3" aria-label="Stufe 4 sichtbar">
+          <input type="text" id="nm3" maxlength="14" autocomplete="off" aria-label="Name der Stufe 4">
+          <input type="number" id="mx3" min="2" max="100" inputmode="numeric" aria-label="Stufe 4: grösste Zahl">
+          <div class="ops" role="group" aria-label="Rechenarten der Stufe 4"><label class="op"><input type="checkbox" id="op30" data-op="+"><span>+</span></label><label class="op"><input type="checkbox" id="op31" data-op="−"><span>−</span></label><label class="op"><input type="checkbox" id="op32" data-op="·"><span>·</span></label><label class="op"><input type="checkbox" id="op33" data-op=":"><span>:</span></label><label class="op"><input type="checkbox" id="op34" data-op="√"><span>√</span></label></div>
+        </div>
+        <p class="note">Haken = Stufe sichtbar. Darunter die Rechenarten (mindestens eine). Grösste Zahl 2 bis 100, bei √ das grösste Ergebnis, höchstens 50.</p>
+        <label class="tog"><input type="checkbox" id="kDrag"> Walzen von Hand drehen erlaubt</label>
+        <label class="tog"><input type="checkbox" id="kChain"> 3. Zahlenwalze, z. B. 4 + 3 · 2 (Punkt vor Strich, ohne Wurzel)</label>
+        <label class="tog"><input type="checkbox" id="kHelp"> Rechenhilfe bei Punkt vor Strich anzeigen</label>
+        <label class="tog"><input type="checkbox" id="kDec"> Mit einer Kommastelle rechnen, z. B. 2.5 + 0.7</label>
+        <label class="tog"><input type="checkbox" id="kNeg"> Negative Ergebnisse erlauben, z. B. 3 − 8 = −5</label>
+        <div class="srow"><span>Sterne: <b id="kStars">0</b></span><button type="button" class="btn" id="resetKid" style="white-space:nowrap">Sterne zurücksetzen</button></div>
       </fieldset>
 
-      <label class="tog"><input type="checkbox" id="setDrag"> Walzen von Hand drehen erlaubt</label>
-      <label class="tog"><input type="checkbox" id="setChain"> 3. Zahlenwalze, z. B. 4 + 3 × 2 (Punkt vor Strich, nicht bei Professor)</label>
-      <label class="tog"><input type="checkbox" id="setHelp"> Rechenhilfe bei Punkt vor Strich anzeigen</label>
+      <div class="srow"><span>Sterne aller Kinder</span><button type="button" class="btn" id="resetStars">Alle auf 0 setzen</button></div>
 
-      <div class="srow"><span>Gesammelte Sterne: <b id="setStars">0</b></span><button type="button" class="btn" id="resetStars">Auf 0 setzen</button></div>
+      <fieldset>
+        <legend>Sichern und wiederherstellen</legend>
+        <p class="note">Sichert alle Kinder mit ihren Einstellungen und das Passwort, zum Beispiel für ein anderes Gerät.</p>
+        <div class="kidbtns">
+          <button type="button" class="btn" id="bkFile">Als Datei sichern</button>
+          <button type="button" class="btn" id="bkCopy">Als Text kopieren</button>
+        </div>
+        <input type="file" id="bkLoad" accept=".json,application/json,text/plain" class="vh">
+        <div class="kidbtns">
+          <label class="btn filebtn" for="bkLoad">Datei laden</label>
+          <button type="button" class="btn" id="bkPasteBtn">Text einfügen</button>
+        </div>
+        <div id="bkPasteBox" hidden>
+          <textarea id="bkText" rows="5" spellcheck="false" aria-label="Gesicherter Text"></textarea>
+          <div class="kidbtns"><button type="button" class="btn primary" id="bkApply">Text übernehmen</button></div>
+        </div>
+        <p class="note" id="bkMsg" aria-live="polite"></p>
+      </fieldset>
 
       <fieldset>
         <legend>Passwort ändern</legend>
@@ -313,39 +424,72 @@ h1{font-family:var(--f-chalk); font-weight:400; font-size:2.4rem; margin:0; lett
   const H = 64;
   const range1 = m => Array.from({length:m}, (_, i) => i + 1);
   let NUMS = range1(20);                                            // Zahlen der aktuellen Stufe
-  const divisors = a => NUMS.filter(d => d <= a && a % d === 0);    // nur Teiler, die aufgehen
+  const divisors = a => NUMS.filter(d => step(a, ':', d) !== null);  // nur Teiler, die aufgehen
+  // Zahlen der Stufe: ganze Zahlen oder, mit Kommastelle, in Schritten von 0.1
+  const numsFor = L => SET.dec ? range1(L.max * 10).map(t => t / 10) : range1(L.max);
+  const fmt = v => typeof v === 'number' ? (Number.isInteger(v) ? String(v) : v.toFixed(1)).replace('-', '−') : v;
   const LEVELS = [
     {max:20,  ops: ['+','−']},
-    {max:20,  ops: ['+','−','×']},
-    {max:20,  ops: ['+','−','×',':']},
-    {max:20,  ops: ['√'], root:true},    // Professor: nur Wurzelziehen
+    {max:20,  ops: ['+','−','·']},
+    {max:20,  ops: ['+','−','·',':']},
+    {max:50,  ops: ['√']},                // Professor: ab Werk nur Wurzelziehen
   ];
-  // Einstellungen der Lehrperson (auf diesem Gerät gespeichert)
-  const SET_KEY = 'emeSettings', DEFAULT_PW = 'Admin';
-  const SET = {levels:[true, true, true, true], max:[20, 20, 20, 50], drag:true, chain:false, help:true, pw:null};
+  // Einstellungen der Lehrperson: eine Zeile pro Kind (auf diesem Gerät gespeichert)
+  const STORE_KEY = 'emeStore', OLD_KEY = 'emeSettings', DEFAULT_PW = 'Admin';
+  const ALL_OPS = ['+', '−', '·', ':', '√'];
+  const DEF_NAMES = ['Entdecker', 'Forscher', 'Profi', 'Professor'];
+  const DEF_OPS = [['+', '−'], ['+', '−', '·'], ['+', '−', '·', ':'], ['√']];
+  const cleanName = (v, i) => (typeof v === 'string' && v.trim()) ? v.trim().slice(0, 14) : DEF_NAMES[i];
+  const cleanOps = (v, i) => { const o = Array.isArray(v) ? ALL_OPS.filter(x => v.includes(x)) : []; return o.length ? o : DEF_OPS[i].slice(); };
+  function clampMax(v, i){ v = Math.round(Number(v)); return isFinite(v) ? Math.min(100, Math.max(2, v)) : (i === 3 ? 50 : 20); }
+  let uid = 0;
+  const newId = () => 'k' + Date.now().toString(36) + (uid++).toString(36);
+  function makeProfile(src, name){
+    src = src || {};
+    const nm = (typeof name === 'string' ? name : typeof src.name === 'string' ? src.name : '').trim().slice(0, 20);
+    const p = {id: typeof src.id === 'string' ? src.id : newId(), name: nm || 'Kind',
+      levels:[true, true, true, true], max:[20, 20, 20, 50], names:DEF_NAMES.slice(), ops:DEF_OPS.map(o => o.slice()),
+      drag:true, chain:false, help:true, dec:false, neg:false, level:0};
+    if (Array.isArray(src.levels) && src.levels.length === 4) p.levels = src.levels.map(Boolean);
+    if (Array.isArray(src.max) && src.max.length === 4) p.max = src.max.map((v, i) => clampMax(v, i));
+    if (Array.isArray(src.names) && src.names.length === 4) p.names = src.names.map(cleanName);
+    if (Array.isArray(src.ops) && src.ops.length >= 3) p.ops = [0, 1, 2, 3].map(i => cleanOps(src.ops[i], i));
+    ['drag', 'chain', 'help', 'dec', 'neg'].forEach(k => { if (typeof src[k] === 'boolean') p[k] = src[k]; });
+    if (Number.isInteger(src.level) && src.level >= 0 && src.level <= 3) p.level = src.level;
+    if (!p.levels.some(Boolean)) p.levels[0] = true;
+    if (!p.levels[p.level]) p.level = p.levels.indexOf(true);
+    return p;
+  }
+  const STORE = {pw:null, cur:null, students:[]};
   try {
-    const st = JSON.parse(localStorage.getItem(SET_KEY) || 'null');
-    if (st){
-      if (Array.isArray(st.levels) && st.levels.length === 4) SET.levels = st.levels.map(Boolean);
-      if (Array.isArray(st.max) && st.max.length === 4) SET.max = st.max.map((v, i) => clampMax(v, i));
-      if (typeof st.drag === 'boolean') SET.drag = st.drag;
-      if (typeof st.chain === 'boolean') SET.chain = st.chain;
-      if (typeof st.help === 'boolean') SET.help = st.help;
-      if (typeof st.pw === 'string') SET.pw = st.pw;
+    const st = JSON.parse(localStorage.getItem(STORE_KEY) || 'null');
+    if (st && Array.isArray(st.students) && st.students.length){
+      STORE.students = st.students.slice(0, 80).map(x => makeProfile(x));
+      if (typeof st.pw === 'string') STORE.pw = st.pw;
+      STORE.cur = st.cur;
+    } else {
+      // Übernahme aus Version 1.3 (eine Einstellung für alle)
+      const old = JSON.parse(localStorage.getItem(OLD_KEY) || 'null');
+      if (old){
+        if (typeof old.pw === 'string') STORE.pw = old.pw;
+        let lv = NaN; try { lv = Number(localStorage.getItem('emeLevel')); } catch(e) {}
+        STORE.students = [makeProfile(Object.assign({}, old, {level: lv}), 'Kind 1')];
+      }
     }
   } catch(e) {}
-  function clampMax(v, i){ v = Math.round(Number(v)); const hi = i === 3 ? 50 : 100; return isFinite(v) ? Math.min(hi, Math.max(2, v)) : (i === 3 ? 50 : 20); }
-  if (!SET.levels.some(Boolean)) SET.levels[0] = true;
-  for (let i = 0; i < 3; i++) LEVELS[i].max = SET.max[i];
+  if (!STORE.students.length) STORE.students = [makeProfile(null, 'Kind 1')];
+  let SET = STORE.students.find(x => x.id === STORE.cur) || STORE.students[0];   // Einstellungen des aktuellen Kindes
+  STORE.cur = SET.id;
+  function saveStore(){ try { localStorage.setItem(STORE_KEY, JSON.stringify(STORE)); } catch(e) {} }
+  for (let i = 0; i < 4; i++){ LEVELS[i].max = SET.max[i]; LEVELS[i].ops = SET.ops[i]; }
 
-  let level = 0;
-  try { const s = Number(localStorage.getItem('emeLevel')); if (s >= 0 && s <= 3) level = s; } catch(e) {}
-  if (!SET.levels[level]) level = SET.levels.indexOf(true);
+  let level = SET.level;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const mod = (a,n) => ((a % n) + n) % n;
 
   class Reel {
-    constructor(el, vals, start, onSettle){
+    constructor(el, vals, start, onSettle, opts){
+      this.h = (opts && opts.h) || H; this.free = !!(opts && opts.free);
       this.el = el; this.vals = vals; this.n = vals.length;
       this.pos = start; this.vel = 0; this.raf = null; this.onSettle = onSettle;
       this.cells = [];
@@ -353,16 +497,17 @@ h1{font-family:var(--f-chalk); font-weight:400; font-size:2.4rem; margin:0; lett
       this.label = el.getAttribute('aria-label'); this.bind(); this.render();
     }
     setVals(vals, start){ this.stop(); this.vals = vals; this.n = vals.length; this.pos = start; this.render(); }
+    get index(){ return mod(Math.round(this.pos), this.n); }
     get value(){ return this.vals[mod(Math.round(this.pos), this.n)]; }
     render(){
       const base = Math.round(this.pos);
       this.cells.forEach((d,i) => {
         const idx = base + i - 3, off = idx - this.pos, a = Math.min(Math.abs(off), 2);
-        d.textContent = this.vals[mod(idx, this.n)];
-        d.style.transform = `translateY(${off*H}px) scale(${1 - a*0.14})`;
+        d.textContent = fmt(this.vals[mod(idx, this.n)]);
+        d.style.transform = `translateY(${off*this.h}px) scale(${1 - a*0.14})`;
         d.style.opacity = this.n === 1 && Math.abs(off) > 0.5 ? 0 : 1 - a*0.35;
       });
-      this.el.setAttribute('aria-label', this.label + ': ' + this.value);
+      this.el.setAttribute('aria-label', this.label + ': ' + fmt(this.value));
     }
     stop(){ if (this.raf) cancelAnimationFrame(this.raf); this.raf = null; clearTimeout(this.wt); }
     animateTo(target, dur, ease){
@@ -391,15 +536,15 @@ h1{font-family:var(--f-chalk); font-weight:400; font-size:2.4rem; margin:0; lett
     bind(){
       const el = this.el; let drag = false, ly = 0, lt = 0;
       el.addEventListener('pointerdown', e => {
-        if (this.locked || !SET.drag) return;
+        if (this.locked || (!this.free && !SET.drag)) return;
         this.stop(); drag = true; ly = e.clientY; lt = performance.now(); this.vel = 0;
         el.setPointerCapture(e.pointerId);
       });
       el.addEventListener('pointermove', e => {
         if (!drag) return;
         const now = performance.now(), dy = e.clientY - ly, dt = Math.max(1, now - lt);
-        this.pos -= dy / H;
-        this.vel = 0.7 * ((-dy / H) / dt) + 0.3 * this.vel;
+        this.pos -= dy / this.h;
+        this.vel = 0.7 * ((-dy / this.h) / dt) + 0.3 * this.vel;
         ly = e.clientY; lt = now; this.render();
       });
       const end = () => {
@@ -410,12 +555,12 @@ h1{font-family:var(--f-chalk); font-weight:400; font-size:2.4rem; margin:0; lett
       };
       el.addEventListener('pointerup', end); el.addEventListener('pointercancel', end);
       el.addEventListener('wheel', e => {
-        if (!SET.drag) return; e.preventDefault(); if (this.locked) return; this.stop();
-        this.pos += e.deltaY / H * 0.6; this.render();
+        if (!this.free && !SET.drag) return; e.preventDefault(); if (this.locked) return; this.stop();
+        this.pos += e.deltaY / this.h * 0.6; this.render();
         this.wt = setTimeout(() => this.snap(), 140);
       }, {passive:false});
       el.addEventListener('keydown', e => {
-        if (this.locked || !SET.drag) return;
+        if (this.locked || (!this.free && !SET.drag)) return;
         const d = e.key === 'ArrowDown' ? 1 : e.key === 'ArrowUp' ? -1 : 0;
         if (d){ e.preventDefault(); this.animateTo(Math.round(this.pos) + d, 180, p => 1 - Math.pow(1-p, 3)); }
       });
@@ -429,7 +574,9 @@ h1{font-family:var(--f-chalk); font-weight:400; font-size:2.4rem; margin:0; lett
   }
 
   // ---- Zustand
-  let input = '', solved = false, stars = 0;
+  let input = '', solved = false;
+  const starsBy = {};                                  // Sterne pro Kind, beim Öffnen der App alle 0
+  const starsOf = () => starsBy[SET.id] || 0;
   // Sterne starten bei jedem Öffnen der App bei 0
   try { localStorage.removeItem('emeStars'); } catch(e) {}
   const $ = id => document.getElementById(id);
@@ -438,24 +585,37 @@ h1{font-family:var(--f-chalk); font-weight:400; font-size:2.4rem; margin:0; lett
   // ---- Rechnen (mit Punkt vor Strich bei drei Zahlen)
   const pick = arr => arr[Math.floor(Math.random() * arr.length)];
   const pickIdx = arr => Math.floor(Math.random() * arr.length);
-  const hi = o => o === '×' || o === ':';
-  const ap = (x, o, y) => o === '+' ? x + y : o === '−' ? x - y : o === '×' ? x * y : x / y;
-  const step = (x, o, y) => (o === ':' && x % y) ? null : ap(x, o, y);
-  const notEven = (x, y) => ({ok:false, why:`${x} : ${y} geht nicht auf. Dreh weiter!`});
+  const hi = o => o === '·' || o === ':';
+  // Exakt in Zehnteln rechnen. null = Ergebnis hätte zu viele Kommastellen (oder geht nicht auf)
+  const tenth = x => Math.round(x * 10);
+  function step(x, o, y){
+    const X = tenth(x), Y = tenth(y); let R;
+    if (o === '+') R = X + Y;
+    else if (o === '−') R = X - Y;
+    else if (o === '·'){ const P = X * Y; if (P % 10) return null; R = P / 10; }
+    else { if (!Y || (X * 10) % Y) return null; R = X * 10 / Y; }
+    if (!SET.dec && R % 10) return null;
+    return R / 10;
+  }
+  const notEven = (x, o, y) => ({ok:false, why: o === ':'
+    ? `${fmt(x)} : ${fmt(y)} geht nicht auf. Dreh weiter!`
+    : `${fmt(x)} · ${fmt(y)} hat zu viele Kommastellen. Dreh weiter!`});
   function evalTask(a, o1, b, o2, c){
     if (o1 === '√') return {ok:true, res:Math.sqrt(b)};
-    if (o2 === undefined){ const r = step(a, o1, b); return r === null ? notEven(a, b) : {ok:true, res:r}; }
+    if (o2 === undefined){ const r = step(a, o1, b); return r === null ? notEven(a, o1, b) : {ok:true, res:r}; }
     if (hi(o2) && !hi(o1)){                       // Punkt vor Strich: zuerst b o2 c
-      const r = step(b, o2, c); if (r === null) return notEven(b, c);
-      return {ok:true, res:ap(a, o1, r)};
+      const r = step(b, o2, c); if (r === null) return notEven(b, o2, c);
+      return {ok:true, res:step(a, o1, r)};
     }
-    const l = step(a, o1, b); if (l === null) return notEven(a, b);
-    const r = step(l, o2, c); if (r === null) return notEven(l, c);
+    const l = step(a, o1, b); if (l === null) return notEven(a, o1, b);
+    const r = step(l, o2, c); if (r === null) return notEven(l, o2, c);
     return {ok:true, res:r};
   }
-  const chainOn = L => SET.chain && !L.root;
+  const isRoot = L => L.ops.length === 1 && L.ops[0] === '√';           // nur Wurzelziehen: zwei Walzen
+  const chainOn = L => SET.chain && L.ops.some(o => o !== '√');         // 3. Zahlenwalze ohne Wurzel
+  const opsFor = L => chainOn(L) ? L.ops.filter(o => o !== '√') : L.ops;
 
-  // Rechenhilfe: wenn Punkt- und Strichrechnung gemischt sind (z. B. 4 + 3 × 2 oder 4 × 3 + 2)
+  // Rechenhilfe: wenn Punkt- und Strichrechnung gemischt sind (z. B. 4 + 3 · 2 oder 4 · 3 + 2)
   function updateHelp(spinning){
     const el = document.getElementById('help'), reelsEl = document.querySelector('.reels');
     const show = SET.help && chainOn(LEVELS[level]);
@@ -469,17 +629,18 @@ h1{font-family:var(--f-chalk); font-weight:400; font-size:2.4rem; margin:0; lett
     reelsEl.classList.toggle('helpon', show);
     el.innerHTML = !need ? 'Punkt vor Strich!'
       : right
-        ? `Punkt vor Strich! Rechne zuerst <b>${r3.value} ${o2} ${r5.value}</b>, dann <b>${r1.value} ${o1}</b> dein Zwischenergebnis.`
-        : `Punkt vor Strich! Rechne zuerst <b>${r1.value} ${o1} ${r3.value}</b>, dann dein Zwischenergebnis <b>${o2} ${r5.value}</b>.`;
+        ? `Punkt vor Strich! Rechne zuerst <b>${fmt(r3.value)} ${o2} ${fmt(r5.value)}</b>, dann <b>${fmt(r1.value)} ${o1}</b> dein Zwischenergebnis.`
+        : `Punkt vor Strich! Rechne zuerst <b>${fmt(r1.value)} ${o1} ${fmt(r3.value)}</b>, dann dein Zwischenergebnis <b>${o2} ${fmt(r5.value)}</b>.`;
   }
 
   // Werte der Zahlenwalzen hinter einem «:» – nur Zahlen, die aufgehen
-  let SQUARES = range1(SET.max[3]).map(n => n * n);                // 1, 4, 9 … (bis 2500)
-  const r3vals = (a, sym) => sym === '√' ? SQUARES : sym === ':' ? divisors(a) : NUMS;
+  let SQUARES = [];                                                 // Quadratzahlen der Stufe
+  const squaresFor = L => range1(Math.min(L.max, 50)).map(n => n * n);   // höchstens bis 2500
+  const r3vals = (a, sym) => sym === '√' ? SQUARES : hi(sym) ? NUMS.filter(b => step(a, sym, b) !== null) : NUMS;
   function r5vals(a, o1, b, o2){
-    if (o2 !== ':') return NUMS;
+    if (!hi(o2)) return NUMS;
     const base = hi(o1) ? step(a, o1, b) : b;
-    return base === null ? NUMS : divisors(base);
+    return base === null ? NUMS : NUMS.filter(c => step(base, o2, c) !== null);
   }
   const sameVals = (x, y) => x.length === y.length && x.every((v, i) => v === y[i]);
   function syncReel(reel, want){
@@ -490,48 +651,49 @@ h1{font-family:var(--f-chalk); font-weight:400; font-size:2.4rem; margin:0; lett
     reel.setVals(want, i);
   }
 
-  // Zufallsaufgabe: Minus nie negativ, Geteilt geht immer auf
+  // Zufallsaufgabe: Minus nur negativ, wenn erlaubt; Geteilt und Kommastellen gehen immer auf
   function makeTask(L){
     for (let tries = 0; tries < 80; tries++){
-      const op = pickIdx(L.ops), sym = L.ops[op];
+      const OPS = opsFor(L), op = pickIdx(OPS), sym = OPS[op];
       let a = pick(NUMS), b = pick(NUMS);
-      if (sym === '−' && b > a) [a, b] = [b, a];
-      if (sym === ':') b = pick(divisors(a));
+      if (sym === '−' && b > a && !SET.neg) [a, b] = [b, a];
+      if (hi(sym)) b = pick(r3vals(a, sym));
       if (sym === '√') b = pick(SQUARES);
       if (!chainOn(L)) return {a, op, b};
-      const op2 = pickIdx(L.ops), s2 = L.ops[op2];
+      const op2 = pickIdx(OPS), s2 = OPS[op2];
       const c = pick(r5vals(a, sym, b, s2));
       const t = evalTask(a, sym, b, s2, c);
-      if (t.ok && t.res >= 0) return {a, op, b, op2, c};
+      if (t.ok && (SET.neg || t.res >= 0)) return {a, op, b, op2, c};
     }
     return {a:1, op:0, b:1, op2:0, c:1};
   }
 
-  const L0 = LEVELS[level]; NUMS = range1(L0.max); const t0 = makeTask(L0);
-  const r1 = new Reel($('r1'), NUMS, t0.a - 1, changed);
-  const r2 = new Reel($('r2'), L0.ops, t0.op, changed);
-  const r3vals0 = r3vals(t0.a, L0.ops[t0.op]);
+  const L0 = LEVELS[level]; NUMS = numsFor(L0); SQUARES = squaresFor(L0); const t0 = makeTask(L0);
+  const r1 = new Reel($('r1'), NUMS, NUMS.indexOf(t0.a), changed);
+  const r2 = new Reel($('r2'), opsFor(L0), t0.op, changed);
+  const r3vals0 = r3vals(t0.a, opsFor(L0)[t0.op]);
   const r3 = new Reel($('r3'), r3vals0, r3vals0.indexOf(t0.b), changed);
-  const r4 = new Reel($('r4'), L0.ops, t0.op2 || 0, changed);
-  const r5vals0 = chainOn(L0) ? r5vals(t0.a, L0.ops[t0.op], t0.b, L0.ops[t0.op2]) : NUMS;
+  const r4 = new Reel($('r4'), opsFor(L0), t0.op2 || 0, changed);
+  const r5vals0 = chainOn(L0) ? r5vals(t0.a, opsFor(L0)[t0.op], t0.b, opsFor(L0)[t0.op2]) : NUMS;
   const r5 = new Reel($('r5'), r5vals0, chainOn(L0) ? r5vals0.indexOf(t0.c) : 0, changed);
 
   function setRootMode(L){
-    document.querySelector('.reels').classList.toggle('root', !!L.root);
+    document.querySelector('.reels').classList.toggle('root', isRoot(L));
     document.querySelector('.reels').classList.toggle('chain', chainOn(L));
-    r2.el.setAttribute('aria-label', L.root ? 'Wurzel' : 'Rechenart');
+    document.querySelector('.reels').classList.toggle('dec', SET.dec);
+    r2.el.setAttribute('aria-label', isRoot(L) ? 'Wurzel' : 'Rechenart');
     r2.label = r2.el.getAttribute('aria-label').split(':')[0];
-    r3.label = L.root ? 'Zahl unter der Wurzel' : 'Zweite Zahl';
+    r3.label = isRoot(L) ? 'Zahl unter der Wurzel' : 'Zweite Zahl';
     r2.render(); r3.render();
   }
   setRootMode(L0);
   function setLevel(l){
     level = l;
-    try { localStorage.setItem('emeLevel', String(l)); } catch(e) {}
+    SET.level = l; saveStore();
     document.querySelectorAll('.lvl').forEach(b => b.setAttribute('aria-pressed', String(Number(b.dataset.l) === l)));
     const L = LEVELS[l];
-    NUMS = range1(L.max);
-    r1.setVals(NUMS, 0); r2.setVals(L.ops, 0); r3.setVals(NUMS, 0); r4.setVals(L.ops, 0); r5.setVals(NUMS, 0);
+    NUMS = numsFor(L); SQUARES = squaresFor(L);
+    r1.setVals(NUMS, 0); r2.setVals(opsFor(L), 0); r3.setVals(NUMS, 0); r4.setVals(opsFor(L), 0); r5.setVals(NUMS, 0);
     setRootMode(L);
     spinAll();
   }
@@ -547,6 +709,8 @@ h1{font-family:var(--f-chalk); font-weight:400; font-size:2.4rem; margin:0; lett
   function changed(){
     syncReel(r3, r3vals(r1.value, r2.value));
     if (chainOn(LEVELS[level])) syncReel(r5, r5vals(r1.value, r2.value, r3.value, r4.value));
+    // Wurzel in gemischten Stufen: erste Zahl wird nicht gebraucht
+    document.querySelector('.reels').classList.toggle('unary', r2.value === '√' && !isRoot(LEVELS[level]));
     input = ''; solved = false; drawAnswer('');
     const t = task();
     setMsg(t.ok ? '' : t.why, t.ok ? '' : 'info');
@@ -566,7 +730,9 @@ h1{font-family:var(--f-chalk); font-weight:400; font-size:2.4rem; margin:0; lett
     fxId++;
     if (k === 'del') input = input.slice(0, -1);
     else if (k === 'neg') input = input.startsWith('-') ? input.slice(1) : '-' + input;
-    else if (/^\d$/.test(k) && input.replace('-','').length < 7) input = (input === '0' ? '' : input === '-0' ? '-' : input) + k;
+    else if (k === 'dot'){ if (SET.dec && !input.includes('.')) input = (input === '' || input === '-' ? input + '0' : input) + '.'; }
+    else if (/^\d$/.test(k) && input.replace(/[-.]/g, '').length < 7 && !/\.\d$/.test(input))
+      input = (input === '0' ? '' : input === '-0' ? '-' : input) + k;
     drawAnswer(''); if (msgEl.classList.contains('wrong')) setMsg('');
   }
 
@@ -575,10 +741,10 @@ h1{font-family:var(--f-chalk); font-weight:400; font-size:2.4rem; margin:0; lett
     if (!t.ok) return setMsg(t.why, 'info');
     if (input === '' || input === '-') return setMsg('Tippe zuerst eine Zahl ein.', 'info');
     if (solved) return;
-    if (Number(input) === t.res){
-      solved = true; stars++; $('score').textContent = stars;
+    if (tenth(Number(input)) === tenth(t.res)){
+      solved = true; starsBy[SET.id] = starsOf() + 1; $('score').textContent = starsOf();
       drawAnswer('right');
-      setMsg(['Super gemacht!','Genau richtig!','Bravo!','Toll gerechnet!'][stars % 4], 'right');
+      setMsg(['Super gemacht','Genau richtig','Bravo','Toll gerechnet'][starsOf() % 4] + ', ' + SET.name + '!', 'right');
       burst(answerEl);
     } else {
       wrongFx();
@@ -682,10 +848,10 @@ h1{font-family:var(--f-chalk); font-weight:400; font-size:2.4rem; margin:0; lett
   // ---- Zufallsaufgabe drehen (immer lösbar)
   function spinAll(){
     const L = LEVELS[level], t = makeTask(L), ch = chainOn(L);
-    const w3 = r3vals(t.a, L.ops[t.op]);
+    const OPS = opsFor(L), w3 = r3vals(t.a, OPS[t.op]);
     if (!sameVals(w3, r3.vals)) r3.setVals(w3, 0);
     let w5 = null;
-    if (ch){ w5 = r5vals(t.a, L.ops[t.op], t.b, L.ops[t.op2]); if (!sameVals(w5, r5.vals)) r5.setVals(w5, 0); }
+    if (ch){ w5 = r5vals(t.a, OPS[t.op], t.b, OPS[t.op2]); if (!sameVals(w5, r5.vals)) r5.setVals(w5, 0); }
     const spinBtn = $('spin'); spinBtn.disabled = true;
     input = ''; solved = false; drawAnswer(''); setMsg('');
     updateHelp(true);
@@ -696,7 +862,7 @@ h1{font-family:var(--f-chalk); font-weight:400; font-size:2.4rem; margin:0; lett
       spinBtn.disabled = false; changed();
     };
     reels.forEach(r => { r.onSettle = done; r.locked = true; });
-    r1.spinTo(t.a - 1, 22, 1300); r2.spinTo(t.op, 14, 1550); r3.spinTo(w3.indexOf(t.b), 34, 1800);
+    r1.spinTo(NUMS.indexOf(t.a), 22, 1300); r2.spinTo(t.op, 14, 1550); r3.spinTo(w3.indexOf(t.b), 34, 1800);
     if (ch){ r4.spinTo(t.op2, 14, 2050); r5.spinTo(w5.indexOf(t.c), 46, 2300); }
   }
 
@@ -709,22 +875,25 @@ h1{font-family:var(--f-chalk); font-weight:400; font-size:2.4rem; margin:0; lett
     if (/^\d$/.test(e.key)) press(e.key);
     else if (e.key === 'Backspace') press('del');
     else if (e.key === '-') press('neg');
+    else if (e.key === '.' || e.key === ',') press('dot');
     else if (e.key === 'Enter' && !(e.target.tagName === 'BUTTON')) press('ok');
   });
 
   // ---- Einstellungen anwenden
   function applySettings(){
-    for (let i = 0; i < 3; i++) LEVELS[i].max = SET.max[i];
-    SQUARES = range1(SET.max[3]).map(n => n * n);
+    for (let i = 0; i < 4; i++){ LEVELS[i].max = SET.max[i]; LEVELS[i].ops = SET.ops[i]; }
     document.querySelectorAll('.lvl').forEach(b => b.hidden = !SET.levels[Number(b.dataset.l)]);
     $('levels').hidden = SET.levels.filter(Boolean).length < 2;
-    $('lvlRoot').textContent = '√ ' + SET.max[3] * SET.max[3];
+    for (let i = 0; i < 4; i++) $('lvName' + i).textContent = SET.names[i];
+    for (let i = 0; i < 4; i++) $('lvOps' + i).textContent = SET.ops[i].join(' ');
+    $('kidName').textContent = SET.name;
     document.querySelector('.reels').classList.toggle('nodrag', !SET.drag);
+    $('pad').classList.toggle('dec', SET.dec);
+    document.querySelector('.key.dot').hidden = !SET.dec;
     $('hint').textContent = SET.drag
       ? 'Walzen mit dem Finger drehen oder den Knopf drücken, dann das Ergebnis eintippen.'
       : 'Knopf drücken, dann das Ergebnis eintippen.';
   }
-  function saveSettings(){ try { localStorage.setItem(SET_KEY, JSON.stringify(SET)); } catch(e) {} }
 
   async function hashPw(t){
     try {
@@ -742,29 +911,123 @@ h1{font-family:var(--f-chalk); font-weight:400; font-size:2.4rem; margin:0; lett
     setTimeout(() => $('pw').focus(), 30);
   }
   function closeSettings(){ $('ov').hidden = true; if (lastFocus && lastFocus.focus) lastFocus.focus(); }
-  function fillForm(){
-    for (let i = 0; i < 4; i++){ $('lv' + i).checked = SET.levels[i]; $('mx' + i).value = SET.max[i]; }
-    $('setDrag').checked = SET.drag;
-    $('setChain').checked = SET.chain;
-    $('setHelp').checked = SET.help;
-    $('setStars').textContent = stars;
-    $('pwNew').value = ''; $('pwNew2').value = ''; $('setErr').textContent = '';
-    updRootTxt();
+  // Arbeitskopie der Kinder, solange die Einstellungen offen sind
+  let draft = [], cur = 0;
+  const copy = o => JSON.parse(JSON.stringify(o));
+  const draftNames = () => draft.map(d => (d.name || '').trim() || '…');
+  function readDetail(){
+    const d = draft[cur]; if (!d) return;
+    d.name = $('kName').value;
+    d.levels = [0, 1, 2, 3].map(i => $('lv' + i).checked);
+    d.names = [0, 1, 2, 3].map(i => $('nm' + i).value);
+    d.ops = [0, 1, 2, 3].map(i => ALL_OPS.filter((o, k) => $('op' + i + k).checked));
+    d.max = [0, 1, 2, 3].map(i => $('mx' + i).value);
+    d.drag = $('kDrag').checked; d.chain = $('kChain').checked; d.help = $('kHelp').checked;
+    d.dec = $('kDec').checked; d.neg = $('kNeg').checked;
   }
-  function updRootTxt(){ const n = clampMax($('mx3').value, 3); $('mx3txt').textContent = '√ bis ' + n * n; }
+  function showDetail(){
+    const d = draft[cur];
+    $('kName').value = d.name;
+    for (let i = 0; i < 4; i++){
+      $('lv' + i).checked = !!d.levels[i]; $('nm' + i).value = d.names[i]; $('mx' + i).value = d.max[i];
+      ALL_OPS.forEach((o, k) => $('op' + i + k).checked = d.ops[i].includes(o));
+    }
+    $('kDrag').checked = d.drag; $('kChain').checked = d.chain; $('kHelp').checked = d.help;
+    $('kDec').checked = d.dec; $('kNeg').checked = d.neg;
+    $('dName').textContent = draftNames()[cur];
+    $('kStars').textContent = starsBy[d.id] || 0;
+  }
+  function goKid(i){ readDetail(); cur = i; rs.setVals(draftNames(), cur); showDetail(); }
+  // ---- Sichern und wiederherstellen
+  let restoredPw;                                      // Passwort aus einer geladenen Sicherung (gilt beim Speichern)
+  const bkMsg = (t, cls) => { $('bkMsg').textContent = t; $('bkMsg').className = 'note' + (cls ? ' ' + cls : ''); };
+  function backupText(){
+    return JSON.stringify({app:'ein-mal-eins', version:document.querySelector('.ver').textContent.replace('Version ', ''),
+      saved:new Date().toISOString(), store:{pw:STORE.pw, cur:STORE.cur, students:STORE.students}}, null, 1);
+  }
+  $('bkFile').addEventListener('click', () => {
+    const d = new Date(), name = `ein-mal-eins-einstellungen-${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}.json`;
+    try {
+      const url = URL.createObjectURL(new Blob([backupText()], {type:'application/json'}));
+      const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 4000);
+      bkMsg(`Die Datei «${name}» wird gespeichert. Falls kein Download startet: «Als Text kopieren» verwenden.`, 'ok');
+    } catch(e) { bkMsg('Das Speichern als Datei geht hier nicht. Bitte «Als Text kopieren» verwenden.', 'bad'); }
+  });
+  $('bkCopy').addEventListener('click', () => {
+    const t = backupText();
+    const fallback = () => {
+      $('bkPasteBox').hidden = false; $('bkText').value = t; $('bkText').focus(); $('bkText').select();
+      bkMsg('Der Text ist markiert. Jetzt kopieren und zum Beispiel in einer E-Mail oder Notiz aufbewahren.', 'ok');
+    };
+    try {
+      navigator.clipboard.writeText(t).then(() => bkMsg('Kopiert. Den Text zum Beispiel in einer E-Mail oder Notiz aufbewahren.', 'ok'), fallback);
+    } catch(e) { fallback(); }
+  });
+  $('bkPasteBtn').addEventListener('click', () => {
+    $('bkPasteBox').hidden = false; $('bkText').value = ''; $('bkText').focus(); bkMsg('');
+  });
+  function restoreFrom(text){
+    let data;
+    try { data = JSON.parse(text); } catch(e) { return bkMsg('Das ist keine gültige Sicherung. Bitte die ganze Datei oder den ganzen Text verwenden.', 'bad'); }
+    const st = data && data.app === 'ein-mal-eins' && data.store;
+    if (!st || !Array.isArray(st.students) || !st.students.length) return bkMsg('Diese Sicherung stammt nicht von «Ein mal Eins» oder enthält keine Kinder.', 'bad');
+    draft = st.students.slice(0, 80).map(x => makeProfile(x));
+    const i = draft.findIndex(x => x.id === st.cur);
+    cur = i >= 0 ? i : 0;
+    restoredPw = typeof st.pw === 'string' ? st.pw : null;
+    rs.setVals(draftNames(), cur); showDetail();
+    const n = draft.length;
+    bkMsg(`${n} ${n === 1 ? 'Kind' : 'Kinder'} geladen. «Speichern» übernimmt die Sicherung, «Abbrechen» verwirft sie.`, 'ok');
+  }
+  $('bkApply').addEventListener('click', () => restoreFrom($('bkText').value));
+  $('bkLoad').addEventListener('change', () => {
+    const f = $('bkLoad').files[0]; if (!f) return;
+    const r = new FileReader();
+    r.onload = () => restoreFrom(String(r.result));
+    r.onerror = () => bkMsg('Die Datei liess sich nicht lesen.', 'bad');
+    r.readAsText(f); $('bkLoad').value = '';
+  });
+
+  function fillForm(){
+    restoredPw = undefined; bkMsg(''); $('bkPasteBox').hidden = true; $('bkText').value = '';
+    draft = STORE.students.map(copy);
+    cur = Math.max(0, STORE.students.indexOf(SET));
+    rs.setVals(draftNames(), cur); showDetail();
+    $('pwNew').value = ''; $('pwNew2').value = ''; $('setErr').textContent = '';
+  }
+  $('kName').addEventListener('input', () => {
+    draft[cur].name = $('kName').value;
+    rs.setVals(draftNames(), cur); $('dName').textContent = draftNames()[cur];
+  });
+  $('addStu').addEventListener('click', () => {
+    readDetail();
+    draft.push(makeProfile(null, 'Kind ' + (draft.length + 1)));
+    cur = draft.length - 1; rs.setVals(draftNames(), cur); showDetail();
+    $('kName').focus(); $('kName').select(); $('setErr').textContent = '';
+  });
+  $('resetKid').addEventListener('click', () => {
+    const id = draft[cur].id;
+    starsBy[id] = 0; $('kStars').textContent = '0';
+    if (id === SET.id) $('score').textContent = '0';
+  });
+  $('delStu').addEventListener('click', () => {
+    if (draft.length < 2) return $('setErr').textContent = 'Mindestens ein Kind muss bleiben.';
+    draft.splice(cur, 1); cur = Math.min(cur, draft.length - 1);
+    rs.setVals(draftNames(), cur); showDetail(); $('setErr').textContent = '';
+  });
 
   $('gear').addEventListener('click', openSettings);
   $('setClose').addEventListener('click', closeSettings);
   $('setCancel').addEventListener('click', closeSettings);
   $('ov').addEventListener('click', e => { if (e.target === $('ov')) closeSettings(); });
-  $('mx3').addEventListener('input', updRootTxt);
 
   $('pwForm').addEventListener('submit', async e => {
     e.preventDefault();
-    const want = SET.pw || await hashPw(DEFAULT_PW);
+    const want = STORE.pw || await hashPw(DEFAULT_PW);
     if (await hashPw($('pw').value) === want){
       $('pwForm').hidden = true; $('setForm').hidden = false; fillForm();
-      setTimeout(() => $('lv0').focus(), 30);
+      setTimeout(() => $('rs').focus(), 30);
     } else {
       $('pwErr').textContent = 'Das Passwort stimmt nicht. Bitte nochmal versuchen.';
       $('pw').select();
@@ -772,30 +1035,47 @@ h1{font-family:var(--f-chalk); font-weight:400; font-size:2.4rem; margin:0; lett
   });
 
   $('resetStars').addEventListener('click', () => {
-    stars = 0; $('score').textContent = 0; $('setStars').textContent = 0;
+    Object.keys(starsBy).forEach(k => starsBy[k] = 0); $('score').textContent = 0;
+    $('kStars').textContent = '0';
   });
 
   $('setForm').addEventListener('submit', async e => {
     e.preventDefault();
-    const levels = [0, 1, 2, 3].map(i => $('lv' + i).checked);
-    if (!levels.some(Boolean)) return $('setErr').textContent = 'Mindestens eine Stufe muss sichtbar sein.';
+    readDetail();
+    const err = (t, i) => { if (i !== undefined && i !== cur){ cur = i; rs.setVals(draftNames(), cur); showDetail(); } $('setErr').textContent = t; return false; };
+    const list = [], seen = new Set();
+    for (let k = 0; k < draft.length; k++){
+      const d = draft[k], name = (d.name || '').trim().slice(0, 20);
+      if (!name) return err('Jedes Kind braucht einen Namen.', k);
+      if (seen.has(name.toLowerCase())) return err(`Der Name «${name}» kommt zweimal vor.`, k);
+      seen.add(name.toLowerCase());
+      if (!d.levels.some(Boolean)) return err(`${name}: Mindestens eine Stufe muss sichtbar sein.`, k);
+      const names = [0, 1, 2, 3].map(i => cleanName(d.names[i], i));
+      const noOp = d.ops.findIndex(o => !o.length);
+      if (noOp >= 0) return err(`${name}: Die Stufe «${names[noOp]}» braucht mindestens eine Rechenart.`, k);
+      list.push(makeProfile({id: d.id, name, levels: d.levels, names, ops: d.ops,
+        max: d.max.map((v, i) => clampMax(v, i)), drag: d.drag, chain: d.chain, help: d.help, dec: d.dec, neg: d.neg, level: d.level}));
+    }
     const p1 = $('pwNew').value, p2 = $('pwNew2').value;
     if (p1 || p2){
-      if (p1 !== p2) return $('setErr').textContent = 'Die beiden neuen Passwörter sind nicht gleich.';
-      if (p1.length < 4) return $('setErr').textContent = 'Das neue Passwort braucht mindestens 4 Zeichen.';
-      SET.pw = await hashPw(p1);
+      if (p1 !== p2) return err('Die beiden neuen Passwörter sind nicht gleich.');
+      if (p1.length < 4) return err('Das neue Passwort braucht mindestens 4 Zeichen.');
+      STORE.pw = await hashPw(p1);
     }
-    SET.levels = levels;
-    SET.max = [0, 1, 2, 3].map(i => clampMax($('mx' + i).value, i));
-    SET.drag = $('setDrag').checked;
-    SET.chain = $('setChain').checked;
-    SET.help = $('setHelp').checked;
-    saveSettings(); applySettings();
+    if (!(p1 || p2) && restoredPw !== undefined) STORE.pw = restoredPw;
+    STORE.students = list;
+    SET = list[cur];                              // das gewählte Kind rechnet jetzt
+    STORE.cur = SET.id;
+    saveStore(); applySettings(); $('score').textContent = starsOf();
     closeSettings();
-    setLevel(SET.levels[level] ? level : SET.levels.indexOf(true));
+    setLevel(SET.levels[SET.level] ? SET.level : SET.levels.indexOf(true));
   });
 
-  $('score').textContent = stars;
+  // ---- Walze zur Auswahl des Kindes (in den Einstellungen)
+  const rs = new Reel($('rs'), STORE.students.map(x => x.name), Math.max(0, STORE.students.indexOf(SET)),
+    () => { if (rs.index !== cur) goKid(rs.index); }, {h:40, free:true});
+
+  $('score').textContent = starsOf();
   applySettings();
   changed();
 })();

@@ -8,28 +8,33 @@ Die App ist eine einzige Datei: `index.html`. Daneben liegt die Benutzerdokument
 
 - **Vier Stufen**
   - Entdecker: + −
-  - Forscher: + − ×
-  - Profi: + − × :
+  - Forscher: + − ·
+  - Profi: + − · :
   - Professor: Wurzelziehen (bis 2500)
 - Walzen von Hand drehen oder per Knopf «Neue Aufgabe drehen»
 - Geteilt- und Wurzelaufgaben gehen immer auf (die Walzen zeigen nur passende Zahlen)
-- Optional eine **3. Zahlenwalze** mit Punkt vor Strich, z. B. 4 + 3 × 2
+- Optional eine **3. Zahlenwalze** mit Punkt vor Strich, z. B. 4 + 3 · 2
 - **Rechenhilfe** mit gelbem Bogen unter dem Teil, der zuerst gerechnet wird
-- Sternenzähler, der bei jedem Öffnen der App bei 0 beginnt
+- Sternenzähler pro Kind, der bei jedem Öffnen der App bei 0 beginnt
 
 ## Einstellungen für die Lehrperson
 
 Über das Zahnrad oben rechts. Das Startpasswort ist **`Admin`**. Bitte nach dem ersten Öffnen ändern.
 
-Einstellbar sind:
+In den Einstellungen wählt die Lehrperson mit der Walze **«Kind»** ein Kind und sieht darunter seine Einstellungen. Pro Kind einstellbar:
 
-- welche Stufen sichtbar sind
-- die grösste Zahl pro Stufe
+- welche Stufen sichtbar sind, mit Name, Rechenarten (+ − · : √) und grösster Zahl
 - ob die Walzen von Hand gedreht werden dürfen
-- 3. Zahlenwalze an/aus
-- Rechenhilfe an/aus
-- Sterne zurücksetzen
-- Passwort ändern
+- 3. Zahlenwalze mit Punkt vor Strich
+- Rechenhilfe
+- Rechnen mit einer Kommastelle
+- negative Ergebnisse
+
+Dazu: Kinder hinzufügen und entfernen, Sterne eines Kindes oder aller Kinder zurücksetzen, Passwort ändern.
+
+Alle Kinder, Einstellungen und das Passwort lassen sich **als Datei oder Text sichern** und auf demselben oder einem anderen Gerät **wiederherstellen**.
+
+Das Kind, das beim Speichern in der Walze steht, rechnet danach in der App. Sein Name steht oben («Es rechnet Anna»), und der Sternenzähler zeigt seine Sterne.
 
 In den Einstellungen öffnet **Benutzerdokumentation öffnen** die Anleitung `Ein_mal_Eins_Benutzerdokumentation.pdf`. Die PDF-Datei muss deshalb im selben Ordner liegen wie `index.html`.
 
