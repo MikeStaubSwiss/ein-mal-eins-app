@@ -253,6 +253,9 @@ h1{font-family:var(--f-chalk); font-weight:400; font-size:2.4rem; margin:0; lett
   border:0; border-radius:10px; padding:8px 10px; resize:vertical; margin-bottom:8px}
 #bkText:focus-visible{outline:3px solid var(--star); outline-offset:2px}
 #bkMsg:empty{display:none}
+.ask{border:2px solid var(--bad); border-radius:14px; padding:10px 12px; background:rgba(255,171,148,.08)}
+.ask p{margin:0 0 10px; font-size:1.15rem}
+.btn.danger{background:var(--bad); color:var(--ink)}
 #bkMsg.ok{color:var(--ok)} #bkMsg.bad{color:var(--bad)}
 .btn{font:800 1.05rem var(--f-num); border:0; border-radius:12px; padding:10px 16px; cursor:pointer; background:#d9cfb4; color:var(--ink)}
 .btn.primary{background:var(--star); box-shadow:0 3px 0 #c79a12}
@@ -316,7 +319,7 @@ h1{font-family:var(--f-chalk); font-weight:400; font-size:2.4rem; margin:0; lett
     <button class="key zero" data-k="0">0</button><button class="key dot" data-k="dot" aria-label="Komma" hidden>.</button>
   </div>
 
-  <footer class="copy"><span>© 2026 Mike Staub · Alle Rechte vorbehalten</span><span class="ver">Version 1.7</span></footer>
+  <footer class="copy"><span>© 2026 Mike Staub · Alle Rechte vorbehalten</span><span class="ver">Version 1.8</span></footer>
 </div>
 
 <div class="ov" id="ov" hidden>
@@ -376,9 +379,11 @@ h1{font-family:var(--f-chalk); font-weight:400; font-size:2.4rem; margin:0; lett
         <label class="tog"><input type="checkbox" id="kDec"> Mit einer Kommastelle rechnen, z. B. 2.5 + 0.7</label>
         <label class="tog"><input type="checkbox" id="kNeg"> Negative Ergebnisse erlauben, z. B. 3 − 8 = −5</label>
         <div class="srow"><span>Sterne: <b id="kStars">0</b></span><button type="button" class="btn" id="resetKid" style="white-space:nowrap">Sterne zurücksetzen</button></div>
+        <div class="ask" id="askKid" hidden role="alertdialog" aria-live="assertive"><p></p><div class="kidbtns"><button type="button" class="btn" data-no>Nein</button><button type="button" class="btn danger" data-yes>Ja, auf 0 setzen</button></div></div>
       </fieldset>
 
       <div class="srow"><span>Sterne aller Kinder</span><button type="button" class="btn" id="resetStars">Alle auf 0 setzen</button></div>
+      <div class="ask" id="askAll" hidden role="alertdialog" aria-live="assertive"><p></p><div class="kidbtns"><button type="button" class="btn" data-no>Nein</button><button type="button" class="btn danger" data-yes>Ja, alle auf 0 setzen</button></div></div>
 
       <fieldset>
         <legend>Sichern und wiederherstellen</legend>
@@ -926,6 +931,7 @@ h1{font-family:var(--f-chalk); font-weight:400; font-size:2.4rem; margin:0; lett
     d.dec = $('kDec').checked; d.neg = $('kNeg').checked;
   }
   function showDetail(){
+    $('askKid').hidden = true;
     const d = draft[cur];
     $('kName').value = d.name;
     for (let i = 0; i < 4; i++){
@@ -939,6 +945,8 @@ h1{font-family:var(--f-chalk); font-weight:400; font-size:2.4rem; margin:0; lett
   }
   function goKid(i){ readDetail(); cur = i; rs.setVals(draftNames(), cur); showDetail(); }
   // ---- Sichern und wiederherstellen
+  let dlApi = null;                                    // Download-Funktion, wenn die App in claude.ai läuft
+  try { if (window.claude && window.claude.use) window.claude.use('downloads').then(x => { dlApi = x; }, () => {}); } catch(e) {}
   let restoredPw;                                      // Passwort aus einer geladenen Sicherung (gilt beim Speichern)
   const bkMsg = (t, cls) => { $('bkMsg').textContent = t; $('bkMsg').className = 'note' + (cls ? ' ' + cls : ''); };
   function backupText(){
@@ -947,6 +955,12 @@ h1{font-family:var(--f-chalk); font-weight:400; font-size:2.4rem; margin:0; lett
   }
   $('bkFile').addEventListener('click', () => {
     const d = new Date(), name = `ein-mal-eins-einstellungen-${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}.json`;
+    if (dlApi){                                      // in claude.ai: über die Download-Funktion des Viewers
+      dlApi.save({filename: name, data: backupText()})
+        .then(() => bkMsg(`Die Datei «${name}» wurde gespeichert.`, 'ok'))
+        .catch(e => bkMsg(e && e.code === 'declined' ? 'Speichern abgebrochen.' : 'Das Speichern als Datei geht hier nicht. Bitte «Als Text kopieren» verwenden.', e && e.code === 'declined' ? '' : 'bad'));
+      return;
+    }
     try {
       const url = URL.createObjectURL(new Blob([backupText()], {type:'application/json'}));
       const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
@@ -990,7 +1004,7 @@ h1{font-family:var(--f-chalk); font-weight:400; font-size:2.4rem; margin:0; lett
   });
 
   function fillForm(){
-    restoredPw = undefined; bkMsg(''); $('bkPasteBox').hidden = true; $('bkText').value = '';
+    restoredPw = undefined; bkMsg(''); $('askAll').hidden = true; $('bkPasteBox').hidden = true; $('bkText').value = '';
     draft = STORE.students.map(copy);
     cur = Math.max(0, STORE.students.indexOf(SET));
     rs.setVals(draftNames(), cur); showDetail();
@@ -1007,9 +1021,11 @@ h1{font-family:var(--f-chalk); font-weight:400; font-size:2.4rem; margin:0; lett
     $('kName').focus(); $('kName').select(); $('setErr').textContent = '';
   });
   $('resetKid').addEventListener('click', () => {
-    const id = draft[cur].id;
-    starsBy[id] = 0; $('kStars').textContent = '0';
-    if (id === SET.id) $('score').textContent = '0';
+    const d = draft[cur], n = starsBy[d.id] || 0;
+    ask('askKid', `${n === 1 ? 'Den 1 Stern' : 'Die ' + n + ' Sterne'} von ${(d.name || '').trim() || 'diesem Kind'} wirklich auf 0 setzen?`, () => {
+      starsBy[d.id] = 0; $('kStars').textContent = '0';
+      if (d.id === SET.id) $('score').textContent = '0';
+    });
   });
   $('delStu').addEventListener('click', () => {
     if (draft.length < 2) return $('setErr').textContent = 'Mindestens ein Kind muss bleiben.';
@@ -1034,10 +1050,17 @@ h1{font-family:var(--f-chalk); font-weight:400; font-size:2.4rem; margin:0; lett
     }
   });
 
-  $('resetStars').addEventListener('click', () => {
+  // Rückfrage im Fenster, bevor Sterne gelöscht werden
+  function ask(box, text, onYes){
+    const el = $(box); el.querySelector('p').textContent = text; el.hidden = false;
+    el.querySelector('[data-no]').focus();
+    el.querySelector('[data-no]').onclick = () => { el.hidden = true; };
+    el.querySelector('[data-yes]').onclick = () => { el.hidden = true; onYes(); };
+  }
+  $('resetStars').addEventListener('click', () => ask('askAll', 'Die Sterne aller Kinder wirklich auf 0 setzen?', () => {
     Object.keys(starsBy).forEach(k => starsBy[k] = 0); $('score').textContent = 0;
     $('kStars').textContent = '0';
-  });
+  }));
 
   $('setForm').addEventListener('submit', async e => {
     e.preventDefault();
